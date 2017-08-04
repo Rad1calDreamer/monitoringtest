@@ -1,0 +1,16 @@
+{
+  "name": "tcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-socket": "^0.3.0",
+    "tail": "^1.2.2",
+    "text-file-follower": "^0.1.0"
+  }
+}
