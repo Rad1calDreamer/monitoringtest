@@ -1,37 +1,29 @@
 'use strict';
-var express = require('express'),
-   app = express(),
-   http = require('http'),
-   bodyParser = require('body-parser'),
-   mongoClient = require('mongodb').MongoClient,
-   config = require('./config'),
-   intel = require('intel'),
-   net = require('net');
+const express = require('express');
+const app = express();
+const http = require('http');
+const bodyParser = require('body-parser');
+const mongoClient = require('mongodb').MongoClient;
+const config = require('./config');
+const intel = require('intel');
+const net = require('net');
 
 
-//
 app.use(bodyParser.json());
 
-
-mongoClient.connect(config.get('mongoose'), function(err, db) {
-   if (err) {
-      return intel.error(err);
-   }
-   // require('./routes')(app, db);
-});
-var server = net.createServer(function(socket) {
+const serverTCP = net.createServer(function(socket) {
    console.log("client connected!!!!");
 
-   var data = '';
+   let data = '';
    socket.on('data', function(d) {
       console.log(d.toString('utf8').indexOf('\n'));
       data += d.toString('utf8');
-      var p = data.indexOf('\n');
+      let p = data.indexOf('\n');
       if (~p) {
-         var cmd = data.substr(0, p);
+         let cmd = data.substr(0, p);
          data = data.slice(p + 1);
          onCommand(cmd.trim(), socket);
-         data='';
+         data = '';
       }
       socket.write(d);
    });
@@ -42,24 +34,49 @@ var server = net.createServer(function(socket) {
 
 });
 
-server.on('connection', function(err, socket) {
-   console.log('hi');
+serverTCP.on('connection', function(err, socket) {
+   console.log('hi tcp client');
 });
 
-server.listen(config.get('port'), function() {
-   intel.info('connetion was start on' + config.get('port'));
+serverTCP.listen(config.get('portTCP'), function() {
+   intel.info('portTCP connetion was start on' + config.get('portTCP'));
 });
+//
+//
+// mongoClient.connect(config.get('mongoose'), function(err, db) {
+//    if (err) {
+//       return intel.error(err);
+//    }
+//    require('./routes')(serverHttp, db);
+// });
+// const serverHttp = http.createServer(app);
+//
+// serverHttp.listen(config.get('portHttp'), function() {
+//    intel.info('connection was start on' + config.get('portHttp'));
+// });
+
+mongoClient.connect(config.get('mongoose'), function(err, db) {
+   if (err) {
+      return intel.error(err);
+   }
+   require('./routes')(app, db);
+});
+http.createServer(app).listen(config.get('portHttp'), function() {
+   intel.info('connetion was start on' + config.get('portHttp'));
+});
+/**
+ * Получает роутер команд
+ * @param {string} имя команды
+ * @param {net.Socket} socket
+ */
 
 function onCommand(cmd, socket) {
    switch (cmd) {
-      case 'open':
+      case 'start':
          socket.write('opened\n');
          break;
-      case 'add':
+      case 'stop':
          socket.write('added\n');
-         break;
-      case 'process':
-         socket.write('processed\n');
          break;
    }
 }

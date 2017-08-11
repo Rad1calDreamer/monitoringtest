@@ -1,4 +1,5 @@
 {
-   "port":6666,
-   "mongoose": "mongodb://localhost/test"
+  "portHttp": 6666,
+  "portTCP": 6665,
+  "mongoose": "mongodb://localhost/test"
 }

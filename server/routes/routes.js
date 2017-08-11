@@ -1,31 +1,34 @@
-var intel = require('intel'),
-   dateFormat = require('dateformat');
+const intel = require('intel');
+const dateFormat = require('dateformat');
 
 module.exports = function(app, db) {
 
-   app.get('/list', function(req, res) {
-      var clientId, date, message, details = {};
-      console.log(req);
-      if (req.params.clientId) {
-         details['clientId'] = req.params.clientId;
+   app.get('/', function(req, res) {
+      let clientId, date, message, details = {};
+
+
+      if (req.query.clientId) {
+         details['clientId'] = parseFloat(req.query.clientId);
       }
-      if (req.params.date) {
-         details['date'] = req.params.date;
+      if (req.query.date) {
+         details['date'] = {$regex: req.query.date};
       }
-      if (req.params.message) {
-         details['message'] = {$in: req.params.message};
+      if (req.query.message) {
+         details['data'] = {$regex: req.query.message};
       }
-      db.collection('logs').find(details, function(err, item) {
+      console.log(details);
+      db.collection('logs').find(details).toArray(function(err, results) {
          if (err) {
+            throw err;
             intel.error('Запись не найдена');
          } else {
-            res.send(item);
+            res.send(results.toString());
          }
-      })
+      });
    });
 
    app.delete('/', function(req, res) {
-      var clientId = req.body.clientID,
+      let clientId = req.body.clientID,
          details = {
             'clientId': clientId
          };
@@ -41,7 +44,7 @@ module.exports = function(app, db) {
    app.post('/', function(req, res) {
       intel.info(req.body);
       if (req.body) {
-         var clientId = req.body.clientId,
+         let clientId = req.body.clientId,
             message = req.body.message,
             logObject = {
                date: dateFormat(new Date(), 'mmm d HH:MM:ss'),

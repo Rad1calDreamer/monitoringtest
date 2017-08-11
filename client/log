@@ -1,20 +1,9 @@
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77777","clientID": 123777}
-{"message":"hellow, world!77774","clientID": 123772}
-{"message":"hellow, world!1177","clientID": 123771}
-{"message":"hellow, world!1175","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientID": 123771}
-{"message":"hellow, world!1176","clientId": 123771}
-{"message":"hellow, world!1176","clientId": 123771}
-{"message":"hellow, world!1176","clientId": 123771}
+Aug 5 13:56:47 	
+For performance issues, it is highly recommended to use the *? quantifier instead of * in order to avoid greediness. This will avoid catching the last <h1> of the document: that's probably not what you want and that's not efficient as the regexp will continue to look for <h1> until the end of the string even if it has already found it before.
+Aug 6 13:56:47 You are looking for the /.../s modifier, 
+also known as the dotall modifier. 
+It forces the dot . to also match newlines, which it does not do by default.
+Aug 7 13:56:47 foooo
+Aug 11 13:56:47 foooobar
+Aug 11 13:56:47 foooobar
+Aug 12 13:56:47 foooobar
