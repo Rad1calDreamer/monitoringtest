@@ -1,11 +1,9 @@
+'use strict';
 const intel = require('intel');
-const dateFormat = require('dateformat');
-
 module.exports = function(app, db) {
 
    app.get('/', function(req, res) {
-      let clientId, date, message, details = {};
-
+      let details = {};
 
       if (req.query.clientId) {
          details['clientId'] = parseFloat(req.query.clientId);
@@ -46,8 +44,9 @@ module.exports = function(app, db) {
       if (req.body) {
          let clientId = req.body.clientId,
             message = req.body.message,
+            date = req.body.date,
             logObject = {
-               date: dateFormat(new Date(), 'mmm d HH:MM:ss'),
+               date: date,
                data: message,
                clientId: clientId
             };

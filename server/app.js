@@ -4,7 +4,7 @@ const app = express();
 const http = require('http');
 const bodyParser = require('body-parser');
 const mongoClient = require('mongodb').MongoClient;
-const config = require('./config');
+const config = require('../config');
 const intel = require('intel');
 const net = require('net');
 
@@ -12,7 +12,6 @@ const net = require('net');
 app.use(bodyParser.json());
 
 const serverTCP = net.createServer(function(socket) {
-   console.log("client connected!!!!");
 
    let data = '';
    socket.on('data', function(d) {
@@ -34,49 +33,41 @@ const serverTCP = net.createServer(function(socket) {
 
 });
 
-serverTCP.on('connection', function(err, socket) {
-   console.log('hi tcp client');
-});
-
+serverTCP.listen(config.get('portTCP'));
 serverTCP.listen(config.get('portTCP'), function() {
    intel.info('portTCP connetion was start on' + config.get('portTCP'));
 });
-//
-//
-// mongoClient.connect(config.get('mongoose'), function(err, db) {
-//    if (err) {
-//       return intel.error(err);
-//    }
-//    require('./routes')(serverHttp, db);
-// });
-// const serverHttp = http.createServer(app);
-//
-// serverHttp.listen(config.get('portHttp'), function() {
-//    intel.info('connection was start on' + config.get('portHttp'));
-// });
+startServer();
 
-mongoClient.connect(config.get('mongoose'), function(err, db) {
-   if (err) {
-      return intel.error(err);
-   }
-   require('./routes')(app, db);
-});
-http.createServer(app).listen(config.get('portHttp'), function() {
-   intel.info('connetion was start on' + config.get('portHttp'));
-});
 /**
  * Получает роутер команд
- * @param {string} имя команды
- * @param {net.Socket} socket
+ * @param cmd{String} Имя команды
  */
 
-function onCommand(cmd, socket) {
+function onCommand(cmd) {
    switch (cmd) {
       case 'start':
-         socket.write('opened\n');
+         startServer();
          break;
       case 'stop':
-         socket.write('added\n');
+         stopServer();
          break;
    }
+}
+
+
+function startServer() {
+   mongoClient.connect(config.get('mongoDbUrl'), function(err, db) {
+      if (err) {
+         return intel.error(err);
+      }
+      require('./routes')(app, db);
+   });
+   http.createServer(app).listen(config.get('portHttp'), function() {
+      intel.info('connetion was start on' + config.get('portHttp'));
+   });
+}
+
+function stopServer() {
+   /*выкл*/
 }

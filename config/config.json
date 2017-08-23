@@ -1,0 +1,7 @@
+{
+  "portHttp": 6666,
+  "portTCP": 6665,
+  "mongoose": "mongodb://localhost/test",
+  "serverAddress": "localhost",
+  "mongoDbUrl": "mongodb://logsviewer:monitoringtest@ds151963.mlab.com:51963/logs_base"
+}

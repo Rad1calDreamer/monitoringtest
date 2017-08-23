@@ -1,11 +1,14 @@
-var net = require('net'),
-   Tail = require('tail').Tail;
+const net = require('net');
+const Tail = require('tail').Tail;
+const http = require('http');
+const config = require('../config');
+const intel = require('intel');
 
-tail = new Tail("log", {separator: /[\r]?\n(?=\w{3}\s\d+\s\d{2}:\d{2}:\d{2})/g});
+tail = new Tail("client/log", {separator: /[\r]?\n(?=\w{3}\s\d+\s\d{2}:\d{2}:\d{2})/g});
 
 tail.on("line", function(data) {
    if (data) {
-      var rawData = (/^(\w{3}\s\d+\s\d{2}:\d{2}:\d{2})([\s\S]*)/mg).exec(data),
+      let rawData = (/^(\w{3}\s\d+\s\d{2}:\d{2}:\d{2})([\s\S]*)/mg).exec(data),
          sendingData;
       if (rawData) {
          sendingData = {
@@ -14,7 +17,6 @@ tail.on("line", function(data) {
             clientId: clientId
          };
       }
-      // console.log(sendingData.message);
       sendData(JSON.stringify(sendingData));
    }
 });
@@ -23,25 +25,25 @@ tail.on("error", function(error) {
    console.log('ERROR: ', error);
 });
 
+let clientId = 321654;
 
-var clientId = 321654;
-
-var client = new net.Socket();
-client.connect(6665, '127.0.0.1', function() {
+const client = new net.Socket();
+client.connect(config.get('portTCP'), config.get('serverAddress'), function(err) {
+   if (err) {
+      return intel.error(err);
+   }
    console.log('Connected');
    client.write('Hello, server! Love, Client.');
 
-   client.on('data', function(data) {
-      console.log(data);
-   })
+   // client.on('data', function(data) {
+   //    console.log(data);
+   // })
 
 });
 
-var http = require('http');
-
-var options = {
-   host: 'localhost',
-   port: 6666,
+const options = {
+   host: config.get('serverAddress'),
+   port: config.get('portHttp'),
    method: 'POST',
    json: true,
    headers: {
@@ -49,14 +51,19 @@ var options = {
    }
 };
 
+/**
+ *Отправка данных
+ * @param string{JSON} Строка в формате JSON, с параметрами сообщения
+ */
 function sendData(string) {
    if (!string) {
       return;
    }
-   var req = http.request(options, function(res) {
+   // intel.info(string);
+   const req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function(chunk) {
-         console.log("body: " + chunk);
+         // intel.info("body: " + chunk);
       });
    });
 
