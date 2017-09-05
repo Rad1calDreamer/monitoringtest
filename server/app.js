@@ -8,15 +8,19 @@ const config = require('../config');
 const intel = require('intel');
 const net = require('net');
 
+function errorHandler(err, req, res, next) {
+   intel.error(err);
+   next(err);
+}
 
 app.use(bodyParser.json());
-
+app.use(errorHandler);
 const serverTCP = net.createServer(function(socket) {
 
    let data = '';
    socket.on('data', function(d) {
-      console.log(d.toString('utf8').indexOf('\n'));
-      data += d.toString('utf8');
+      console.log(d.toString().indexOf('\n'));
+      data += d.toString();
       let p = data.indexOf('\n');
       if (~p) {
          let cmd = data.substr(0, p);
@@ -27,13 +31,17 @@ const serverTCP = net.createServer(function(socket) {
       socket.write(d);
    });
 
-   socket.on('end', function() {
+   socket.on('end', function(err) {
+      if (err) {
+         intel.info(err);
+         return;
+      }
+
       console.log('client disconnected');
    });
 
 });
 
-serverTCP.listen(config.get('portTCP'));
 serverTCP.listen(config.get('portTCP'), function() {
    intel.info('portTCP connetion was start on' + config.get('portTCP'));
 });

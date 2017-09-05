@@ -58,3 +58,4 @@ fabric.properties
 .idea/monitoringtest.iml
 .idea/watcherTasks.xml
 node_modules/
+/woops

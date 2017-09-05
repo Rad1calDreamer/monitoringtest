@@ -1,5 +1,10 @@
 'use strict';
 const intel = require('intel');
+
+function catchError(err) {
+   intel.info(err);
+}
+
 module.exports = function(app, db) {
 
    app.get('/', function(req, res) {
@@ -19,6 +24,7 @@ module.exports = function(app, db) {
          if (err) {
             throw err;
             intel.error('Запись не найдена');
+            return;
          } else {
             res.send(results.toString());
          }
@@ -33,10 +39,11 @@ module.exports = function(app, db) {
       db.collection('logs').remove(details, function(err, item) {
          if (err) {
             intel.error('Запись не найдена');
+            return;
          } else {
             res.send('Запись за ' + clientId + ' удалена!');
          }
-      })
+      });
    });
 
    app.post('/', function(req, res) {
@@ -53,6 +60,7 @@ module.exports = function(app, db) {
          db.collection('logs').insert(logObject, function(err, result) {
             if (err) {
                res.send({'error': 'wooops ><'});
+               return;
             } else {
                res.send(result.ops[0]);
             }
